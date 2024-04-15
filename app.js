@@ -1,6 +1,7 @@
 const mongodb = require('mongodb');
 const mongoose = require('mongoose');
 const validator = require('validator');
+require('dotenv').config();
 
 const express = require('express');
 const app = express();
