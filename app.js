@@ -17,7 +17,6 @@ async function main() {
 
 // création du schema
 const teamSchema = new mongoose.Schema({
-    id: Number,
     name: String
 });
 
@@ -31,12 +30,14 @@ teamSchema.methods.toJSON = function () {
     return pokemon;
 };
 
+fetch('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0')
+    .then(r => console.log(r));
+
 /* les routes (CRUD) */
 // read
 app.get('/', (req, res) => {
     const pokemon = new teamA;
     try {
-
     } catch(e) {
         res.status(400).send(e);
     }
