@@ -30,8 +30,25 @@ teamSchema.methods.toJSON = function () {
     return pokemon;
 };
 
-fetch('https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0')
-    .then(r => console.log(r));
+/* randomiser les pokémons
+
+const PokeAPI = async (name) => {
+    return await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`)
+        .then(res => res.json())
+        .then(data => {
+            const { name } = data;
+            console.log(name);
+            return { name };
+        });
+};
+
+const randomPokemon = async () => {
+    const pokemons = await fetch('https://pokeapi.co/api/v2/pokemon?limit=-1').then(rep => rep.json());
+
+    const pokemonName = pokemons.results[Math.floor(Math.random() * pokemons.count)].name
+
+    return await PokeAPI(pokemonName);
+}; */
 
 /* les routes (CRUD) */
 // read
