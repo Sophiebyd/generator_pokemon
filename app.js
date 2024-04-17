@@ -87,6 +87,21 @@ app.get("/pokemon/:id", async (req, res) => {
     }
 });
 
+// read par name (pour récupérer par le nom)
+app.get("/pokemon/name/:name", async (req, res) => {
+    const pokemonName = req.params.name;
+    console.log(pokemonName);
+    try {
+        const pokemonByName = await teamA.findOne({ name: pokemonName });
+        console.log(pokemonByName);
+        if (!pokemonByName) return res.status(404).send(`Le Pokémon n'a pas été trouvé`)
+        res.send(pokemonByName);
+} catch (e) {
+        console.log(e);
+        res.status(500).send(e);
+    }
+});
+
 // create 
 app.post('/pokemon', async (req, res) => {
     const pokemon = new teamA(req.body);
