@@ -7,6 +7,8 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+app.use(express.json());
+
 main().catch(err => console.log(err));
 
 //connection à la db
@@ -17,7 +19,17 @@ async function main() {
 
 // création du schema
 const teamSchema = new mongoose.Schema({
-    name: String
+    id: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+    }
 });
 
 //creation du model
@@ -52,19 +64,41 @@ const randomPokemon = async () => {
 
 /* les routes (CRUD) */
 // read
-app.get('/', (req, res) => {
-    const pokemon = new teamA;
+app.get('/', async (req, res) => {
     try {
+        const readPokemon = await teamA.find({});
+        console.log(readPokemon);        
+        res.send(readPokemon);
     } catch(e) {
-        res.status(400).send(e);
+        console.log(e);
+        res.status(500).send(e);
     }
 });
 
 // read par id (pour récupérer une équipe précise)
-
-// read par name (pour rechercher et récupérer le pokémon)
+app.get("/pokemon/:id", async (req, res) => {
+    const pokemonId = req.params.id;
+    try {
+        const pokemon = await teamA.findOne({ id: pokemonId });
+        if (!pokemon) return res.status(404).send(`Le Pokémon n'a pas été trouvé`)
+        res.send(pokemon);
+    } catch (e) {
+        res.status(500).send(e);
+    }
+});
 
 // create 
+app.post('/pokemon', async (req, res) => {
+    const pokemon = new teamA(req.body);
+    try {
+        await pokemon.save();
+        console.log(pokemon);
+        res.status(201).send(pokemon);
+    } catch (e) {
+        console.log(e);
+        res.status(400).send(e);
+    }
+});
 
 // update
 
