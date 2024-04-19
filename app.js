@@ -20,7 +20,7 @@ async function main() {
 // création du schema
 const teamSchema = new mongoose.Schema({
     id: {
-        type: String,
+        type: Number,
         required: true,
         unique: true,
     },
@@ -118,8 +118,19 @@ app.post('/pokemon', async (req, res) => {
 // update
 
 // delete par id (pour supprimer une équipe précise)
+app.delete("/pokemon/:id", async (req, res) => {
+    const pokemonId = parseInt(req.params.id);
+    try {
+        const pokemon = await teamA.findOneAndDelete({ id: pokemonId });
+        console.log(pokemon);
+        if (!pokemon) return res.status(404).send(`Pokemon not found`)
+        res.send(pokemon);
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(e);
+    }
+});
 
 app.listen(port, () => {
     console.log(`Lancé sur le http://localhost:${port}`);
 });
-
