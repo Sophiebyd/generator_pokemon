@@ -62,12 +62,20 @@ const randomPokemon = async () => {
     return await PokeAPI(pokemonName);
 }; */
 
+// => faire une team 
+// peut être créer un modèle de tableau avec 6 pokémon dedans ? || utiliser l'API directement au lieu d'insérer manuellement ?
+// commencer par un tableau vide et insérer dedans avec une requête ?
+// générer un id aléatoire comme pour la todolist ne serait pas mieux ?
+// faut t'il une boucle pour appliquer à chaque création ?
+// effectuer le validator
+
+
 /* les routes (CRUD) */
 // read
 app.get('/', async (req, res) => {
     try {
         const readPokemon = await teamA.find({});
-        console.log(readPokemon);        
+        console.log(readPokemon);
         res.send(readPokemon);
     } catch(e) {
         console.log(e);
@@ -106,6 +114,7 @@ app.get("/pokemon/name/:name", async (req, res) => {
 app.post('/pokemon', async (req, res) => {
     const pokemon = new teamA(req.body);
     try {
+        console.log(typeof pokemon.name);
         await pokemon.save();
         console.log(pokemon);
         res.status(201).send(pokemon);
@@ -116,12 +125,26 @@ app.post('/pokemon', async (req, res) => {
 });
 
 // update
-
+app.patch("/pokemon/:id", async (req, res) => {
+    const pokemonId = req.params.id; 
+    try {
+        const pokemon = await teamA.findByIdAndUpdate(pokemonId, req.body, {
+            new: true, 
+            runValidators: true,
+        });
+        console.log(pokemon);
+        if (!pokemon) return res.status(404).send(`pokemon not found`);
+        res.send(pokemon);
+    } catch (e) {
+        console.log(e);
+        res.status(500).send(e);
+    }
+});
 // delete par id (pour supprimer une équipe précise)
 app.delete("/pokemon/:id", async (req, res) => {
-    const pokemonId = parseInt(req.params.id);
+    const pokemonId = req.params.id;
     try {
-        const pokemon = await teamA.findOneAndDelete({ id: pokemonId });
+        const pokemon = await teamA.findOneAndDelete(pokemonId);
         console.log(pokemon);
         if (!pokemon) return res.status(404).send(`Pokemon not found`)
         res.send(pokemon);
