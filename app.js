@@ -19,11 +19,6 @@ async function main() {
 
 // création du schema
 const teamSchema = new mongoose.Schema({
-    id: {
-        type: Number,
-        required: true,
-        unique: true,
-    },
     name: {
         type: String,
         required: true,
@@ -65,7 +60,6 @@ const randomPokemon = async () => {
 // => faire une team 
 // peut être créer un modèle de tableau avec 6 pokémon dedans ? || utiliser l'API directement au lieu d'insérer manuellement ?
 // commencer par un tableau vide et insérer dedans avec une requête ?
-// générer un id aléatoire comme pour la todolist ne serait pas mieux ?
 // faut t'il une boucle pour appliquer à chaque création ?
 // effectuer le validator
 
@@ -87,7 +81,7 @@ app.get('/', async (req, res) => {
 app.get("/pokemon/:id", async (req, res) => {
     const pokemonId = req.params.id;
     try {
-        const pokemon = await teamA.findOne({ id: pokemonId });
+        const pokemon = await teamA.findById(pokemonId);
         if (!pokemon) return res.status(404).send(`Le Pokémon n'a pas été trouvé`)
         res.send(pokemon);
     } catch (e) {
@@ -140,11 +134,12 @@ app.patch("/pokemon/:id", async (req, res) => {
         res.status(500).send(e);
     }
 });
+
 // delete par id (pour supprimer une équipe précise)
 app.delete("/pokemon/:id", async (req, res) => {
     const pokemonId = req.params.id;
     try {
-        const pokemon = await teamA.findOneAndDelete(pokemonId);
+        const pokemon = await teamA.findByIdAndDelete(pokemonId);
         console.log(pokemon);
         if (!pokemon) return res.status(404).send(`Pokemon not found`)
         res.send(pokemon);
