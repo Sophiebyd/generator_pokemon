@@ -24,11 +24,21 @@ const teamSchema = new mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
-    }
+    },
+    members: [{
+        name: String,
+        id: {
+            type: Number,
+            validate: {
+                validator: validator.isNumeric,
+                message: `L'id doit être un chiffre`
+            }
+        }
+    }]
 });
 
-//creation du model
-const teamA = mongoose.model('TeamA', teamSchema);
+// //creation du model
+// const team = mongoose.model('Team', teamSchema);
 
 // Données au format JSON
 teamSchema.methods.toJSON = function () {
@@ -37,8 +47,7 @@ teamSchema.methods.toJSON = function () {
     return pokemon;
 };
 
-/* randomiser les pokémons
-
+/*
 const PokeAPI = async (name) => {
     return await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`)
         .then(res => res.json())
@@ -48,20 +57,14 @@ const PokeAPI = async (name) => {
             return { name };
         });
 };
-
-const randomPokemon = async () => {
-    const pokemons = await fetch('https://pokeapi.co/api/v2/pokemon?limit=-1').then(rep => rep.json());
-
-    const pokemonName = pokemons.results[Math.floor(Math.random() * pokemons.count)].name
-
-    return await PokeAPI(pokemonName);
-}; */
+*/
 
 // => faire une team 
-// peut être créer un modèle de tableau avec 6 pokémon dedans ? || utiliser l'API directement au lieu d'insérer manuellement ?
-// commencer par un tableau vide et insérer dedans avec une requête ?
-// faut t'il une boucle pour appliquer à chaque création ?
-// effectuer le validator
+// - créer le fetch pour que ça soit utilisable ok
+// - ajouter un champ pour le nom d'équipe ok
+// - créer un array ok
+// - faire une boucle avec l'api pokemon et le pousser dans le tableau ok
+// - nommer la team et la sauvegarder 
 
 
 /* les routes (CRUD) */
@@ -71,7 +74,7 @@ app.get('/', async (req, res) => {
         const readPokemon = await teamA.find({});
         console.log(readPokemon);
         res.send(readPokemon);
-    } catch(e) {
+    } catch (e) {
         console.log(e);
         res.status(500).send(e);
     }
@@ -81,7 +84,7 @@ app.get('/', async (req, res) => {
 app.get("/pokemon/:id", async (req, res) => {
     const pokemonId = req.params.id;
     try {
-        const pokemon = await teamA.findById(pokemonId);
+        const pokemon = await team.findById(pokemonId);
         if (!pokemon) return res.status(404).send(`Le Pokémon n'a pas été trouvé`)
         res.send(pokemon);
     } catch (e) {
@@ -94,23 +97,41 @@ app.get("/pokemon/name/:name", async (req, res) => {
     const pokemonName = req.params.name;
     console.log(pokemonName);
     try {
-        const pokemonByName = await teamA.findOne({ name: pokemonName });
+        const pokemonByName = await team.findOne({ name: pokemonName });
         console.log(pokemonByName);
         if (!pokemonByName) return res.status(404).send(`Le Pokémon n'a pas été trouvé`)
         res.send(pokemonByName);
-} catch (e) {
+    } catch (e) {
         console.log(e);
         res.status(500).send(e);
     }
 });
 
 // create 
+
+// randomiser les pokémons
+const randomPokemon = async () => {
+    const pokemons = await fetch('https://pokeapi.co/api/v2/pokemon?limit=-1').then(rep => rep.json());
+    const pokemonName = pokemons.results[Math.floor(Math.random() * pokemons.count)].name
+    console.log(pokemonName);
+    return await PokeAPI(pokemonName);
+};
+
 app.post('/pokemon', async (req, res) => {
-    const pokemon = new teamA(req.body);
+    const teamName = req.body;
     try {
-        console.log(typeof pokemon.name);
-        await pokemon.save();
-        console.log(pokemon);
+        const team = [];
+        for (let i = 0; i < 0; i++) {
+            const data = await randomPokemon();
+            team.push(data);
+            console.log(data);
+        };
+        const newTeam = new teamA({
+            name: teamName,
+            member: team,
+        })
+        await newTeam.save();
+        console.log(newTeam);
         res.status(201).send(pokemon);
     } catch (e) {
         console.log(e);
@@ -120,10 +141,10 @@ app.post('/pokemon', async (req, res) => {
 
 // update
 app.patch("/pokemon/:id", async (req, res) => {
-    const pokemonId = req.params.id; 
+    const pokemonId = req.params.id;
     try {
-        const pokemon = await teamA.findByIdAndUpdate(pokemonId, req.body, {
-            new: true, 
+        const pokemon = await team.findByIdAndUpdate(pokemonId, req.body, {
+            new: true,
             runValidators: true,
         });
         console.log(pokemon);
@@ -139,7 +160,7 @@ app.patch("/pokemon/:id", async (req, res) => {
 app.delete("/pokemon/:id", async (req, res) => {
     const pokemonId = req.params.id;
     try {
-        const pokemon = await teamA.findByIdAndDelete(pokemonId);
+        const pokemon = await team.findByIdAndDelete(pokemonId);
         console.log(pokemon);
         if (!pokemon) return res.status(404).send(`Pokemon not found`)
         res.send(pokemon);
