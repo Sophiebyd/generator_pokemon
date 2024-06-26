@@ -3,11 +3,14 @@ const mongoose = require('mongoose');
 const createValidation = require('./validations/create')
 require('dotenv').config();
 
+const cors = require('cors');
+
 const express = require('express');
 const { capitalize } = require('lodash');
 const app = express();
 const port = 3001;
 
+app.use(cors())
 app.use(express.json());
 
 main().catch(err => console.log(err));
@@ -57,7 +60,6 @@ const pokeAPI = async (name) => {
 // créer un tableau
 // while jusqu'à 6
 // push dans le tableau
-
 
 const randomPokemon = async () => {
     let array = []; // création d'un tableau vide pour insérer des nouvelles données 
